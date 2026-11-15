@@ -163,7 +163,21 @@ wiek_2023 |>
 
 # ---- Pytanie 10. Zaufanie do Sejmu od 2002 do 2023 roku (w domu) -----------------
 
+factor(essround, levels = c("2002", "2004", "2006", "2008", "2010", "2012", "2014", "2016", "2018", "2020", "2023"))
 
+ess_lata <- ess_polska |>
+  mutate(gr_wiekowe = case_when(
+    agea >= 15 & agea <= 29 ~ "15-29",
+    agea >= 30 & agea <= 44 ~ "30-44",
+    agea >= 45 & agea <= 59 ~ "45-59",
+    agea >= 60 ~ "60+"
+  )) |>
+  filter(!is.na(gr_wiekowe)) |>
+  group_by(essround, gr_wiekowe) |>
+  summarise(sr_prl = mean(trstprl, na.rm = TRUE))
+
+ggplot(ess_lata, aes(x = essround, y = sr_prl, colour = gr_wiekowe)) +
+  geom_line()
 
 # Odpowiedź:
 
