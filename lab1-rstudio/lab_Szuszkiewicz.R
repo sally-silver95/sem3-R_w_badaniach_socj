@@ -17,8 +17,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-ess_polska <- read_sav("C:\\Users\\sylwi\\OneDrive\\Dokumenty\\zajecia_R\\ess_polska.sav")
-
+ess_polska <- read_sav("lab1-rstudio/ess_polska.sav")
 
 # ---- Pytanie 1. Ile osób zbadano? ------------------------------------------------
 
@@ -114,8 +113,7 @@ ess23 |>
 
 # ---- Pytanie 8. Zaufanie do Sejmu w województwach: 2018 i 2023 (w domu) ----------
 
-regiony <- read.csv("regiony.csv")
-head(regiony)
+regiony <- read.csv("lab1-rstudio/regiony.csv")
 
 ess_z_woj <- ess_polska |>
   left_join(regiony, by = "region")
@@ -137,11 +135,25 @@ porownanie_18_23 <- sr_2018 |>
 
 porownanie_18_23
 
-# Odpowiedź:
+# Odpowiedź: Część regionów napoczatku nie miaal pary ponieważ pomiedzy dbadaniami zmienily sie niektore oznaczenia (PL'numer')
+# wojewodztw się zmieniły. Zaufanie spadło najbardziej w wojewodztwie Podlaskim (o 1,63 punkta), a najbardziej wzrosło w 
+# województwie Warmińsko-mazurksim (o 1,36 pk). W obu przypadkach te gwałtowne zmiany mogą wynikać z faktu, żę badano tam po 
+# 45-44 osoby (w Podlaskim) i 59-33 osoby (w Warmińsko-Mazurskim), co jest dosyć małą próbą.
 
 
 # ---- Pytanie 9. Wiek a internet (w domu) -----------------------------------------
 
+wiek_2023 <- ess23 |>
+  mutate(gr_wiekowa = case_when(
+    agea >= 15 & agea <= 29 ~ "15-29",
+    agea >= 30 & agea <= 44 ~ "30-44",
+    agea >= 45 & agea <= 59 ~ "45-59",
+    agea >= 60 ~ "60+",
+    #is.na(agea) ~ "brak danych"
+  )) 
+
+ggplot(wiek_2023, aes(x = gr_wiekowa)) +
+  geom_histogram()
 
 # Odpowiedź:
 
