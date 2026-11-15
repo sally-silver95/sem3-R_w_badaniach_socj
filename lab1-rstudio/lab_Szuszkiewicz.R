@@ -163,26 +163,43 @@ wiek_2023 |>
 
 # ---- Pytanie 10. Zaufanie do Sejmu od 2002 do 2023 roku (w domu) -----------------
 
-factor(essround, levels = c("2002", "2004", "2006", "2008", "2010", "2012", "2014", "2016", "2018", "2020", "2023"))
-
 ess_lata <- ess_polska |>
-  mutate(gr_wiekowe = case_when(
+  mutate(
+    wiek = case_when(
     agea >= 15 & agea <= 29 ~ "15-29",
     agea >= 30 & agea <= 44 ~ "30-44",
     agea >= 45 & agea <= 59 ~ "45-59",
     agea >= 60 ~ "60+"
+  ),
+  rok = factor(essround, 
+               levels = 1:11, 
+               labels = c("2002", "2004", "2006", "2008", "2010", "2012", "2014", "2016", "2018", "2020", "2023")
   )) |>
-  filter(!is.na(gr_wiekowe)) |>
-  group_by(essround, gr_wiekowe) |>
-  summarise(sr_prl = mean(trstprl, na.rm = TRUE))
+  filter(!is.na(wiek)) |>
+  group_by(rok, wiek) |>
+  summarise(sr_prl = mean(trstprl, na.rm = TRUE), .groups = "drop")
 
-ggplot(ess_lata, aes(x = essround, y = sr_prl, colour = gr_wiekowe)) +
-  geom_line()
 
-# Odpowiedź:
+ggplot(ess_lata, aes(x = rok, y = sr_prl, colour = wiek, group = wiek)) +
+  geom_line() + 
+  labs(title = "Zaufanie do Sejmu w Polsce 2002-2023", x = "lata", y = "średnie zaufanie", 
+       caption = "źródło: European Social Survey (ESS)")
+
+ggsave("lab1-rstudio/zaufanie_sejm_2002-2023.png", width = 7, height = 3.5)
+
+# Odpowiedź: Mocy spadek w zaufaniu jest widoczny w latach ok. 2004 oraz 2020.
 
 
 # ---- Dla chętnych: wagi ----------------------------------------------------------
 
+ess_polska %>%
+  filter(essround == 11) %>%
+  summarise(
+    wiek_zwykly = mean(agea, na.rm = TRUE),
+    wiek_wazony = weighted.mean(agea, anweight, na.rm = TRUE),
+    sejm_zwykly = mean(trstprl, na.rm = TRUE),
+    sejm_wazony = weighted.mean(trstprl, anweight, na.rm = TRUE)
+  )
 
-# Odpowiedź:
+# Odpowiedź: Średni wiek bez wagi to 48,7 lat, a z wagą 51,3 lat. Oznacza to, że w próbie jest za dużo osób młodszych (zaniżają zwykłą średnią).
+# Zaufanie do Sejmu bez wagi i z wagą wynosi tyle samo: 3,91. Waga nie zmienia odpowiedzi z pytania 3, bo wynik pozostaje identyczny.
