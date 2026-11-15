@@ -144,21 +144,25 @@ porownanie_18_23
 # ---- Pytanie 9. Wiek a internet (w domu) -----------------------------------------
 
 wiek_2023 <- ess23 |>
-  mutate(gr_wiekowa = case_when(
+  mutate(gr_wiekowe = case_when(
     agea >= 15 & agea <= 29 ~ "15-29",
     agea >= 30 & agea <= 44 ~ "30-44",
     agea >= 45 & agea <= 59 ~ "45-59",
-    agea >= 60 ~ "60+",
-    #is.na(agea) ~ "brak danych"
-  )) 
+    agea >= 60 ~ "60+"
+  ))
 
-ggplot(wiek_2023, aes(x = gr_wiekowa)) +
-  geom_histogram()
+wiek_2023 |>
+  filter(!is.na(gr_wiekowe)) |>
+  ggplot(aes(x = netustm, fill = gr_wiekowe)) +
+    geom_histogram(binwidth = 50, colour = "pink")
 
-# Odpowiedź:
+# Odpowiedź: Zakładając że "starsi" to osoby z przedzilu wiekowego 45-60+ a młodsi to 15-44 to osoby młodsze w iwększej liczbie 
+#            mają długi czas korzystania z internetu (większość osob spedzających ponad 500 min dziennie to osoby z tego przedziału wiekowego).
+#            „Removed rows” oznacza że program ostrzega nas przed tym że niektóre wiersze (tutaj te z NA) nie są brane pod uwage na wykresie
 
 
 # ---- Pytanie 10. Zaufanie do Sejmu od 2002 do 2023 roku (w domu) -----------------
+
 
 
 # Odpowiedź:
